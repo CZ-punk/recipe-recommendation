@@ -3,17 +3,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/back
     username: root
-    password: ewqDSA19@&
-
-
+    password: ewqdsa1927
   jpa:
     hibernate:
       ddl-auto: update
-
 jwt:
  secret:
   key: Q0hQYWdlZG1kRG9ja2VyQysrUHl0aG9uUnVieUF3c0VjMlJkc015c3FsTW9uZ29EQg==
-
 kakao:
   api:
    key: d0fc91228613a4484fb3a76d45a74f92

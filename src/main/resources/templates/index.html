@@ -5,7 +5,7 @@
     <title>CH_MAIN</title>
     <style>
         body {
-            background-image: url('/images/background_image.png');
+            background-image: url('/images/main.jpg');
             background-size: cover;
             background-position: center;
             font-family: Arial, sans-serif;
@@ -43,7 +43,9 @@
     </div>
 
     <div th:unless="${user == null}">
-        <span th:text="'Welcome ' + ${user.username}" style="font-size: 18px;">username</span>
+        <span th:text="'Welcome ' + ${user.username} + '!'" style="font-size: 18px;">username</span>
+        <br><br>
+        <button type="button" th:onclick="|location.href='@{/api/recipe_home}'|">View Recipes</button>
         <button onclick="logout()">Logout</button>
     </div>
 

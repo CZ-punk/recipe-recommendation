@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_RECIPE</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .ingredient-item {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .delete-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: red;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form th:action="@{/api/recipe}" method="post" id="recipeForm">
+        <div id="ingredientList">
+            <div class="ingredient-item">
+                <input type="text" name="ingredients" placeholder="재료 입력">
+                <button type="button" class="delete-btn" data-index="0" onclick="deleteIngredient(this.dataset.index)">X</button>
+            </div>
+        </div>
+        <button type="button" onclick="addIngredient()">재료 추가</button>
+        <button type="submit">제출</button>
+    </form>
+</div>
+<script th:inline="javascript">
+
+    let ingredients = [];
+    function addIngredient() {
+        const ingredientList = document.getElementById('ingredientList');
+        const newIngredient = document.createElement('div');
+        newIngredient.classList.add('ingredient-item');
+
+        // input 요소 생성
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'ingredients';
+        input.placeholder = '재료 입력';
+        newIngredient.appendChild(input);
+
+        // 삭제 버튼 생성
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete-btn');
+        deleteButton.textContent = 'X';
+        deleteButton
+            .dataset.index = ingredientList.children.length; // 현재 리스트의 아이템 수를 인덱스로 설정
+        deleteButton.onclick = function() {
+            deleteIngredient(this.dataset.index);
+        };
+        newIngredient.appendChild(deleteButton);
+
+        ingredientList.appendChild(newIngredient);
+
+        ingredients.push(input.value);
+    }
+
+    function deleteIngredient(index) {
+        const ingredientList = document.getElementById('ingredientList');
+        const items = ingredientList.children;
+
+        // 삭제할 요소 제거
+        items[index].remove();
+
+        // 삭제된 요소 이후의 요소들 인덱스 재설정
+        for (let i = index; i < items.length; i++) {
+            items[i].querySelector('.delete-btn').dataset.index = i;
+        }
+        ingredients.splice(index, 1);
+    }
+
+    const recipeForm = document.getElementById('recipeForm');
+    recipeForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const filterInput = (value) => {
+            return value.replace(/<[^>]*>/g, ''); // 모든 HTML 태그 제거
+        };
+
+        // 서버에서 기대하는 형식에 맞춰 객체를 생성합니다.
+        // const recipeData = {
+        //     ingredients: Array.from(document.querySelectorAll('#ingredientList input'))
+        //         .map(input => filterInput(input.value)) // 입력값 필터링
+        // };
+
+        const recipeDto = new RecipeDto();
+        recipeDto.ingredients = Array.from(document.querySelectorAll('#ingredientList input'))
+            .map(input => filterInput(input.value));
+
+        // JSON.stringify를 사용하여 객체를 JSON 문자열로 변환합니다.
+        const jsonData = JSON.stringify(recipeDto);
+
+        fetch('/api/recipe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: jsonData
+        })
+            .then(response => response.json())
+
+
+        // 그냥 잡지마 나 프론트 공부 안해서 몰라
+    });
+</script>
+</body>
+</html>
