@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_MAIN</title>
+    <style>
+        body {
+            background-image: url('/images/background_image.png');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+
+    <div th:if="${user == null}">
+        <button type="button" th:onclick="|location.href='@{/api/login}'|">Login</button>
+        <button type="button" th:onclick="|location.href='@{/api/signup}'|">Signup</button>
+    </div>
+
+    <div th:unless="${user == null}">
+        <span th:text="'Welcome ' + ${user.username}" style="font-size: 18px;">username</span>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<script th:inline="javascript">
+    function logout() {
+        fetch('/api/logout', {
+            method: 'POST'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('로그아웃 실패');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>

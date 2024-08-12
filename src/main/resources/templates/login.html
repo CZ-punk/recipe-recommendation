@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_LOGIN</title>
+    <style>
+        .kakao-login-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .kakao-login-btn:hover {
+            opacity: 0.8;
+        }
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        body {
+            background-image: url('/images/background_image.png');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2>Login</h2>
+
+    <form th:action="@{/api/login-process}" method="post">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    <img th:src="@{/images/kakao_login_btn.png}" alt="카카오 로그인"
+         onclick="location.href='https://kauth.kakao.com/oauth/authorize?client_id=d0fc91228613a4484fb3a76d45a74f92&redirect_uri=http://localhost:8080/api/login/kakao/callback&response_type=code'" class="kakao-login-btn">
+
+</div>
+</body>
+</html>
