@@ -3,7 +3,7 @@ package com.ch.back.user.service;
 import com.ch.back.user.controller.request.KakaoUserInfoDto;
 import com.ch.back.user.domain.PlatformEnum;
 import com.ch.back.user.domain.User;
-import com.ch.back.basic_setting.jwt.JwtUtils;
+import com.ch.back.jwt.JwtUtils;
 import com.ch.back.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

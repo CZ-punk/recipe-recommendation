@@ -1,9 +1,9 @@
-package com.ch.back.basic_setting.config;
+package com.ch.back.config;
 
-import com.ch.back.basic_setting.jwt.JwtUtils;
-import com.ch.back.basic_setting.jwt.JwtAuthenticationFilter;
-import com.ch.back.basic_setting.jwt.JwtAuthorizationFilter;
-import com.ch.back.basic_setting.jwt.UserDetailsServiceImpl;
+import com.ch.back.jwt.JwtUtils;
+import com.ch.back.jwt.JwtAuthenticationFilter;
+import com.ch.back.jwt.JwtAuthorizationFilter;
+import com.ch.back.jwt.UserDetailsServiceImpl;
 import com.ch.back.support.error.ErrorType;
 import com.ch.back.support.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,6 +72,8 @@ public class WebConfig {
                         .failureUrl("/api/login?error").permitAll()
         );
 
+        // 추후 role 에 맞지 않다면 parameter 로 redirectUrl 을 생성하고
+        // 로그인 페이지를 띄울것임.
         http.exceptionHandling(eh -> eh.accessDeniedHandler(((request, response, accessDeniedException) -> {
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             response.setContentType("application/json");

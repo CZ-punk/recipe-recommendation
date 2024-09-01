@@ -1,4 +1,4 @@
-package com.ch.back.basic_setting.jwt;
+package com.ch.back.jwt;
 
 import com.ch.back.support.error.ErrorType;
 import com.ch.back.support.response.ApiResponse;
@@ -6,11 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -36,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String token = bearerToken.substring(7);
             if (!jwtUtils.validationToken(token)) {
                 log.error("Not Valid Token");
-                handleAuthException(response);
+                handleAuthException(request, response);
                 return;
             }
 
@@ -45,7 +46,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 setAuthentication(claims.getSubject());
             } catch (Exception e) {
                 log.error(e.getMessage());
-                handleServerException(response);
+                handleServerException(request, response);
                 return;
             }
         }
@@ -65,22 +66,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-    private void handleAuthException(HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setStatus(400);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(ApiResponse.error(ErrorType.TOKEN_ERROR));
-        response.getWriter().write(jsonResponse);
-        response.getWriter().flush();
+    private void handleAuthException(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.error("유효하지 않은 토큰. 쿠키를 삭제하고 로그인 페이지로 리다이렉트합니다.");
+
+        jwtUtils.clearCookie(request, response);
+        response.sendRedirect("/api/user/login");
     }
 
-    private void handleServerException(HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setStatus(400);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(ApiResponse.error(ErrorType.DEFAULT_ERROR));
-        response.getWriter().write(jsonResponse);
-        response.getWriter().flush();
+    private void handleServerException(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.error("유효하지 않은 토큰. 쿠키를 삭제하고 로그인 페이지로 리다이렉트합니다.");
+
+        jwtUtils.clearCookie(request, response);
+        response.sendRedirect("/api/user/login");
     }
 
 }

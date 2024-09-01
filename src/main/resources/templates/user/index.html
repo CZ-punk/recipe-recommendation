@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_MAIN</title>
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" id="mainContent">
+    <!-- 컨텐츠가 여기에 동적으로 로드됩니다 -->
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAuthStatus();
+    });
+
+    function checkAuthStatus() {
+        fetch('/api/user/check-auth', {
+            method: 'GET',
+            credentials: 'include' // 쿠키를 포함하여 요청
+        })
+            .then(response => response.json())
+            .then(apiResponse => {
+                if (apiResponse.result === 'SUCCESS') {
+                    showAuthenticatedView(apiResponse.data.username);
+                } else {
+                    showUnauthenticatedView();
+                }
+            })
+            .catch(error => {
+                console.error('인증 확인 오류:', error);
+                showUnauthenticatedView();
+            });
+    }
+
+    function showAuthenticatedView(username) {
+        const content = `
+            <span style="font-size: 18px;">Welcome ${username}!</span>
+            <br><br>
+            <button type="button" onclick="location.href='/api/recipe/create'">Create Recipes</button>
+            <button type="button" onclick="location.href='/api/recipe/user/${encodeURIComponent(username)}'">My Recipes</button>
+            <button onclick="logout()">Logout</button>
+        `;
+        document.getElementById('mainContent').innerHTML = content;
+    }
+
+    function showUnauthenticatedView() {
+        const content = `
+            <button type="button" onclick="location.href='/api/user/login'">Login</button>
+            <button type="button" onclick="location.href='/api/user/signup'">Signup</button>
+        `;
+        document.getElementById('mainContent').innerHTML = content;
+    }
+
+    function logout() {
+        fetch('/api/user/logout', {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(apiResponse => {
+                if (apiResponse.result === 'SUCCESS') {
+                    window.location.href = '/';
+                } else {
+                    console.error('로그아웃 실패:', apiResponse.error);
+                }
+            })
+            .catch(error => {
+                console.error('로그아웃 오류:', error);
+            });
+    }
+</script>
+
+</body>
+</html>

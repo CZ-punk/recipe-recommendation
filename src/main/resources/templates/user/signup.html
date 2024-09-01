@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CH_SIGNUP</title>
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>회원가입</h2>
+    <form id="signupForm">
+        <div>
+            <label for="username">사용자명:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">가입하기</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('/api/user/signup', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(apiResponse => {
+                if (apiResponse.result === 'SUCCESS') {
+                    alert('회원가입이 성공적으로 완료되었습니다!');
+                    window.location.href = '/api/user/login';
+                } else if (apiResponse.result === 'ERROR') {
+                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+                }
+            })
+            .catch(error => {
+                console.error('회원가입 오류:', error);
+                alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+            });
+    });
+</script>
+</body>
+</html>

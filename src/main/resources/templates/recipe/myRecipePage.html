@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_MY_RECIPE</title>
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            color: #333;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .home-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #45a049;
+        }
+
+        .recipe {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .recipe:hover {
+            transform: translateY(-5px);
+        }
+
+        .recipe h2 {
+            margin-top: 0;
+            color: #4CAF50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .ingredients {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .steps {
+            margin-top: 15px;
+        }
+
+        .step {
+            margin-bottom: 10px;
+        }
+
+        .step strong {
+            color: #333;
+        }
+
+        .step-description {
+            font-style: italic;
+            color: #666;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:text="${username} + '의 레시피'"></h1>
+        <a href="/" class="home-button">홈으로 돌아가기</a>
+    </div>
+    <div id="recipeList"></div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const username = /*[[${username}]]*/ 'defaultUsername';
+    /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchRecipes();
+    });
+
+    function fetchRecipes() {
+        fetch(`/api/recipe/user/${encodeURIComponent(username)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(apiResponse => {
+                if (apiResponse.result === 'SUCCESS') {
+                    displayRecipes(apiResponse.data);
+                } else {
+                    throw new Error('레시피를 가져오는데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('다시 시도해주세요!');
+                window.location.href = '/';
+            });
+    }
+
+    function displayRecipes(recipes) {
+        const recipeList = document.getElementById('recipeList');
+        recipeList.innerHTML = '';
+
+        recipes.forEach(recipe => {
+            const recipeElement = document.createElement('div');
+            recipeElement.className = 'recipe';
+            recipeElement.innerHTML = `
+                <h2>${recipe.recipeName}</h2>
+                <div class="ingredients">
+                    <strong>재료:</strong> ${recipe.ingredients.map(ingredient => ingredient.ingredientName).join(', ')}
+                </div>
+                <div class="steps">
+                    ${recipe.steps.map(step => `
+                        <div class="step">
+                            <strong>Step ${step.order}:</strong>
+                            <div class="step-description">${step.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            recipeList.appendChild(recipeElement);
+        });
+    }
+</script>
+</body>
+</html>

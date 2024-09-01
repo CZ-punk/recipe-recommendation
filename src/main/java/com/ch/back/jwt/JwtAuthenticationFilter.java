@@ -1,4 +1,4 @@
-package com.ch.back.basic_setting.jwt;
+package com.ch.back.jwt;
 
 import com.ch.back.user.domain.UserRoleEnum;
 import jakarta.servlet.FilterChain;

@@ -1,4 +1,4 @@
-package com.ch.back.basic_setting.jwt;
+package com.ch.back.jwt;
 
 import com.ch.back.user.domain.User;
 import com.ch.back.user.repository.UserRepository;

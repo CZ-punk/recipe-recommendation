@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CH_CREATE_RECIPE</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .ingredient-item input {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .delete-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: red;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #recipeName {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>레시피 입력</h2>
+    <form id="recipeForm">
+        <div>
+            <label for="recipeName">레시피 이름:</label>
+            <input type="text" id="recipeName" name="recipeName" required>
+        </div>
+        <div id="ingredientList">
+            <div class="ingredient-item">
+                <input type="text" name="ingredients[]" placeholder="재료 입력">
+                <button type="button" class="delete-btn" onclick="deleteIngredient(this)">X</button>
+            </div>
+        </div>
+        <button type="button" onclick="addIngredient()">재료 추가</button>
+        <button type="submit">제출</button>
+        <div class="button-container">
+
+            <button type="button" onclick="window.location.href='/'">홈으로 돌아가기</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function addIngredient() {
+        const ingredientList = document.getElementById('ingredientList');
+        const newIngredient = document.createElement('div');
+        newIngredient.classList.add('ingredient-item');
+        newIngredient.innerHTML = `
+                <input type="text" name="ingredients[]" placeholder="재료 입력">
+                <button type="button" class="delete-btn" onclick="deleteIngredient(this)">X</button>
+            `;
+        ingredientList.appendChild(newIngredient);
+    }
+
+    function deleteIngredient(button) {
+        button.closest('.ingredient-item').remove();
+    }
+
+    document.getElementById('recipeForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const recipeName = document.getElementById('recipeName').value.trim();
+        const ingredients = Array.from(document.querySelectorAll('input[name="ingredients[]"]'))
+            .map(input => input.value.trim())
+            .filter(value => value !== '')
+            .map(ingredientName => ({ ingredientName }));
+
+        const question = `
+        재료에 대한 최고의 레시피를 만들어줘.
+        레시피의 제목은 '${recipeName}' 이고 사용할 재료는 ${JSON.stringify(ingredients.map(ingredient => ingredient.ingredientName))} 야.
+        Json 형식으로만 답변을 해줘. 재료는 몇가지 정도 더 추가해도 돼.
+        예를 들어 아래와 같이 답변해줘.
+{
+    "recipeName": "김치찌개",
+    "ingredients": [
+        "김치",
+        "돼지고기",
+        "양파",
+        "고추",
+        "대파",
+        "두부",
+        "다진 마늘",
+        "고춧가루",
+        "설탕",
+        "간장"
+    ],
+    "steps": [
+        {
+            "order": 1,
+            "description": "김치는 먹기 좋은 크기로 썰고, 돼지고기는 큼직하게 썰어줍니다. 양파, 대파는 채 썰고, 고추는 어슷썰기 합니다. 두부는 먹기 좋은 크기로 깍둑썰기 합니다."
+        },
+        {
+            "order": 2,
+            "description": "냄비에 식용유를 두르고 돼지고기를 볶아줍니다. 돼지고기의 겉면이 익으면 김치를 넣고 함께 볶아줍니다."
+        },
+        {
+            "order": 3,
+            "description": "볶아진 김치에 다진 마늘, 고춧가루, 설탕, 간장을 넣어 간을 맞춰줍니다. 김치 국물을 적당량 넣어줍니다."
+        },
+        {
+            "order": 4,
+            "description": "3번에 물을 부어 팔팔 끓여줍니다. 물의 양은 취향에 따라 조절해주세요."
+        },
+        {
+            "order": 5,
+            "description": "국물이 끓어오르면 두부, 대파, 고추를 넣고 한소끔 끓여줍니다. 기호에 따라 청양고추를 추가하면 더욱 얼큰하게 즐길 수 있습니다."
+        },
+        {
+            "order": 6,
+            "description": "간을 보고 부족한 부분을 추가하여 간을 맞춰줍니다. 새우젓으로 간을 맞추면 더욱 감칠맛이 살아납니다."
+        },
+    ]
+}
+위 Json 형태로 응답해주고, 다른 어떠한 설명도 하지마.`;
+
+        const clientRequest = {
+            recipeName: recipeName,
+            ingredients: ingredients,
+            question: question
+        };
+
+        fetch('/api/ai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(clientRequest)
+        })
+            .then(response => response.json())
+            .then(apiResponse => {
+                if (apiResponse.result === 'SUCCESS') {
+                    const clientResponse = apiResponse.data;
+                    const recipeRequest = {
+                        recipeName: clientResponse.recipeName,
+                        ingredients: clientResponse.ingredients,
+                        steps: clientResponse.steps
+                    };
+
+                    return fetch('/api/recipe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(recipeRequest)
+                    });
+                } else {
+                    throw new Error('AI 요청이 실패하였습니다. 다시 시도해주세요.');
+                }
+            })
+            .then(response => response.json())
+            .then(recipeApiResponse => {
+                if (recipeApiResponse.result === 'SUCCESS') {
+                    alert('레시피를 성공적으로 저장했습니다. My Recipe 를 확인해주세요!');
+                    window.location.href = '/';
+                } else {
+                    throw new Error('레시피 저장에 실패하였습니다. 다시 시도해주세요.');
+                }
+            })
+            .catch((error) => {
+                console.error('에러:', error);
+                alert(error.message);
+                window.location.href = '/';
+            });
+    });
+</script>
+</body>
+</html>

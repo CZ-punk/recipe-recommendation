@@ -1,5 +1,7 @@
-package com.ch.back.basic_setting.jwt;
+package com.ch.back.jwt;
 
+import com.ch.back.support.error.CoreApiException;
+import com.ch.back.support.error.ErrorType;
 import com.ch.back.user.domain.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -113,4 +115,8 @@ public class JwtUtils {
         }
     }
 
+    public String subStringToken(String bearerToken) {
+        if (bearerToken == null) throw new CoreApiException(ErrorType.TOKEN_ERROR);
+        return bearerToken.substring(7);
+    }
 }

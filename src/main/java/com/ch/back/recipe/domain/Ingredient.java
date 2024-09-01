@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Ingredient {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String itemName;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
     public Ingredient(String itemName, Recipe recipe) {
