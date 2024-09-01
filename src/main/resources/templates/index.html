@@ -5,7 +5,7 @@
     <title>CH_MAIN</title>
     <style>
         body {
-            background-image: url('/images/background_image.png');
+            background-image: url('/images/main.jpg');
             background-size: cover;
             background-position: center;
             font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
         }
@@ -35,37 +35,35 @@
 
 <body>
 <div class="container">
-
-
-    <div th:if="${user == null}">
-        <button type="button" th:onclick="|location.href='@{/api/login}'|">Login</button>
-        <button type="button" th:onclick="|location.href='@{/api/signup}'|">Signup</button>
-    </div>
-
-    <div th:unless="${user == null}">
-        <span th:text="'Welcome ' + ${user.username}" style="font-size: 18px;">username</span>
+    <div th:if="${user != null}">
+        <span th:text="'Welcome ' + ${user.username} + '!'" style="font-size: 18px;"></span>
+        <br><br>
+        <button type="button" onclick="location.href='/api/recipe/create'">Create Recipes</button>
+        <button type="button" onclick="location.href='/api/recipe/view'">View Recipes</button>
         <button onclick="logout()">Logout</button>
     </div>
-
+    <div th:if="${user == null}">
+        <button type="button" onclick="location.href='/api/user/login'">Login</button>
+        <button type="button" onclick="location.href='/api/user/signup'">Signup</button>
+    </div>
 </div>
-
-</body>
-</html>
 
 <script th:inline="javascript">
     function logout() {
-        fetch('/api/logout', {
+        fetch('/api/user/logout', {
             method: 'POST'
         })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/';
-                } else {
-                    alert('로그아웃 실패');
-                }
+            .then(() => {
+                // 로그아웃 후 메인 페이지로 리다이렉트
+                window.location.href = '/';
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Logout error:', error);
+                // 오류가 발생해도 메인 페이지로 리다이렉트
+                window.location.href = '/';
             });
     }
 </script>
+
+</body>
+</html>

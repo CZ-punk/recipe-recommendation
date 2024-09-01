@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CH_RECIPE</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-image: url('/images/main.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .ingredient-item input {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .delete-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: red;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #recipeName {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>레시피 입력</h2>
+    <form id="recipeForm">
+        <div>
+            <label for="recipeName">레시피 이름:</label>
+            <input type="text" id="recipeName" name="recipeName" required>
+        </div>
+        <div id="ingredientList">
+            <div class="ingredient-item">
+                <input type="text" name="ingredients[]" placeholder="재료 입력">
+                <button type="button" class="delete-btn" onclick="deleteIngredient(this)">X</button>
+            </div>
+        </div>
+        <button type="button" onclick="addIngredient()">재료 추가</button>
+        <button type="submit">제출</button>
+    </form>
+</div>
+
+<script>
+    function addIngredient() {
+        const ingredientList = document.getElementById('ingredientList');
+        const newIngredient = document.createElement('div');
+        newIngredient.classList.add('ingredient-item');
+        newIngredient.innerHTML = `
+                <input type="text" name="ingredients[]" placeholder="재료 입력">
+                <button type="button" class="delete-btn" onclick="deleteIngredient(this)">X</button>
+            `;
+        ingredientList.appendChild(newIngredient);
+    }
+
+    function deleteIngredient(button) {
+        button.closest('.ingredient-item').remove();
+    }
+    document.getElementById('recipeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const recipeName = document.getElementById('recipeName').value.trim();
+        const ingredients = Array.from(document.querySelectorAll('input[name="ingredients[]"]'))
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+
+        fetch('/api/recipe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recipeName: recipeName,
+                ingredients: ingredients
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    // 성공적으로 제출되면 서버가 지정한 페이지로 이동
+                    window.location.href = response.url;
+                } else {
+                    // 오류 발생 시 알림
+                    // throw new Error('레시피 제출 중 오류가 발생했습니다.');
+                }
+            })
+            .catch((error) => {
+                console.error('에러:', error);
+                alert(error.message);
+            });
+    });
+</script>
+</body>
+</html>
+
+
