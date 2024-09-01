@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/back
     username: root
-    password: ewqdsa1927
+    password: ewqDSA19@&
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,5 +14,5 @@ kakao:
   api:
    key: d0fc91228613a4484fb3a76d45a74f92
   redirect:
-   url: http://localhost:8080/api/login/kakao/callback
+   url: http://localhost:8080/api/user/login/kakao/callback
 
